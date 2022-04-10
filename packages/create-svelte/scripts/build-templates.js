@@ -5,20 +5,28 @@ import prettier from 'prettier';
 import { transform } from 'sucrase';
 import glob from 'tiny-glob/sync.js';
 import { mkdirp, rimraf } from '../utils.js';
+import ts from 'typescript';
 
-/** @param {string} typescript */
-function convert_typescript(typescript) {
-	const transformed = transform(typescript, {
-		transforms: ['typescript']
-	});
+/**
+ * @param {string} typescript
+ * @param {boolean} declarationsOnly
+ */
+function convert_typescript(typescript, declarationsOnly = false) {
+	if (declarationsOnly) {
+		/* todo */
+		ts;
+		return '';
+	} else {
+		const code = transform(typescript, { transforms: ['typescript'] }).code;
 
-	return prettier.format(transformed.code, {
-		parser: 'babel',
-		useTabs: true,
-		singleQuote: true,
-		trailingComma: 'none',
-		printWidth: 100
-	});
+		return prettier.format(code, {
+			parser: 'babel',
+			useTabs: true,
+			singleQuote: true,
+			trailingComma: 'none',
+			printWidth: 100
+		});
+	}
 }
 
 /** @param {Set<string>} shared */
@@ -142,6 +150,18 @@ async function generate_templates(shared) {
 				js.push(file);
 			}
 		}
+
+		JSON.parse(fs.readFileSync(meta_file, 'utf-8')).generateDeclarationsFor?.forEach(
+			(/** @type string */ name) => {
+				if (!name.endsWith('.ts')) throw new Error(`${name} is not a .ts file`);
+
+				const contents = fs.readFileSync(path.join(cwd, name), 'utf-8');
+				js.push({
+					name: name.replace(/.ts$/, '.d.ts'),
+					contents: convert_typescript(contents, true)
+				});
+			}
+		);
 
 		fs.copyFileSync(meta_file, `${dir}/meta.json`);
 		fs.writeFileSync(`${dir}/files.ts.json`, JSON.stringify(ts, null, '\t'));

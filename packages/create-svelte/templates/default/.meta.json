@@ -1,3 +1,4 @@
 {
-	"description": "SvelteKit demo app"
+	"description": "SvelteKit demo app",
+	"generateDeclarationsFor": ["src/lib/form.ts"]
 }
