@@ -157,7 +157,7 @@ async function generate_templates(shared) {
 
 				const contents = fs.readFileSync(path.join(cwd, name), 'utf-8');
 				js.push({
-					name: name.replace(/.ts$/, '.d.ts'),
+					name: path.normalize(name.replace(/.ts$/, '.d.ts')),
 					contents: convert_typescript(contents, true)
 				});
 			}
