@@ -3,7 +3,8 @@ import ts from 'typescript';
 import prettier from 'prettier';
 
 /**
- * @param {string} typescript the typescript source code to transpile
+ * Transpile a TypeScript source string to JavaScript.
+ * @param {string} typescript
  */
 export function transpile(typescript) {
 	const transformed = transform(typescript, { transforms: ['typescript'] });
@@ -18,7 +19,7 @@ export function transpile(typescript) {
 }
 
 /**
- *
+ * Extract type declarations from a TypeScript file.
  * @param {string} filepath the path to the file to extract types from
  * @returns {string}
  */

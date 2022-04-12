@@ -5,7 +5,7 @@ import prettier from 'prettier';
 import { transform } from 'sucrase';
 import glob from 'tiny-glob/sync.js';
 import { mkdirp, rimraf } from '../utils.js';
-import { extract_types, transpile } from './typescript.js';
+import { transpile, extract_types } from '../transformers.js';
 
 /** @param {Set<string>} shared */
 async function generate_templates(shared) {
