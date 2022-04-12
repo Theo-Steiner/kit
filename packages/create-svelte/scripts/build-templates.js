@@ -5,29 +5,7 @@ import prettier from 'prettier';
 import { transform } from 'sucrase';
 import glob from 'tiny-glob/sync.js';
 import { mkdirp, rimraf } from '../utils.js';
-import ts from 'typescript';
-
-/**
- * @param {string} typescript
- * @param {boolean} declarationsOnly
- */
-function convert_typescript(typescript, declarationsOnly = false) {
-	if (declarationsOnly) {
-		/* todo */
-		ts;
-		return '';
-	} else {
-		const code = transform(typescript, { transforms: ['typescript'] }).code;
-
-		return prettier.format(code, {
-			parser: 'babel',
-			useTabs: true,
-			singleQuote: true,
-			trailingComma: 'none',
-			printWidth: 100
-		});
-	}
-}
+import { extract_types, transpile } from './typescript.js';
 
 /** @param {Set<string>} shared */
 async function generate_templates(shared) {
@@ -96,7 +74,7 @@ async function generate_templates(shared) {
 			} else if (file.name.endsWith('.ts')) {
 				js.push({
 					name: file.name.replace(/\.ts$/, '.js'),
-					contents: convert_typescript(file.contents)
+					contents: transpile(file.contents)
 				});
 			} else if (file.name.endsWith('.svelte')) {
 				// we jump through some hoops, rather than just using svelte.preprocess,
@@ -155,10 +133,10 @@ async function generate_templates(shared) {
 			(/** @type string */ name) => {
 				if (!name.endsWith('.ts')) throw new Error(`${name} is not a .ts file`);
 
-				const contents = fs.readFileSync(path.join(cwd, name), 'utf-8');
+				const filepath = path.join(cwd, name);
 				js.push({
 					name: path.normalize(name.replace(/.ts$/, '.d.ts')),
-					contents: convert_typescript(contents, true)
+					contents: extract_types(filepath)
 				});
 			}
 		);
@@ -210,7 +188,7 @@ async function generate_shared() {
 				name: js_name,
 				include: [...include],
 				exclude: [...exclude, 'typescript'],
-				contents: convert_typescript(contents)
+				contents: transpile(contents)
 			});
 
 			include.push('typescript');
