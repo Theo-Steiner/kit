@@ -3,7 +3,7 @@ import ts from 'typescript';
 import prettier from 'prettier';
 
 /**
- * @param {string} typescript
+ * @param {string} typescript the typescript source code to transpile
  */
 export function transpile(typescript) {
 	const transformed = transform(typescript, { transforms: ['typescript'] });
@@ -19,10 +19,10 @@ export function transpile(typescript) {
 
 /**
  *
- * @param {string} fileName
+ * @param {string} filepath the path to the file to extract types from
  * @returns {string}
  */
-export function extract_types(fileName) {
+export function extract_types(filepath) {
 	// Create a Program with an in-memory emit
 	const host = ts.createCompilerHost({
 		declaration: true,
@@ -33,7 +33,7 @@ export function extract_types(fileName) {
 
 	// Prepare and emit the d.ts files
 	const program = ts.createProgram(
-		[fileName],
+		[filepath],
 		{
 			declaration: true,
 			emitDeclarationOnly: true
