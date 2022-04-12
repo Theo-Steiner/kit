@@ -17,7 +17,7 @@ export async function create(cwd, options) {
 
 /**
  * @param {string} template
- * @param {boolean} typescript
+ * @param {false | "checkjs" | "typescript"} types
  * @param {string} name
  * @param {string} cwd
  */
@@ -40,7 +40,7 @@ function write_template_files(template, types, name, cwd) {
 }
 
 /**
- build*
+ *
  * @param {string} cwd
  * @param {import('./types/internal').Options} options
  * @param {string} name
